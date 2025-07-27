@@ -1,0 +1,63 @@
+<!DOCTYPE html><html><meta charset="UTF-8"/><title>View</title><body>
+<script>
+"use strict";function TOOLS(){var b=document.documentElement;this.d=window.devicePixelRatio;this.w=b.clientWidth*this.d+0.5|0;this.h=b.clientHeight*this.d+0.5|0;this.k=false;this.l=[];this.font=function(n,f){this.dom("style",["innerHTML","@font-face{font-family:"+n+";src:url("+f+")}"],document.documentElement)}.bind(this);this.download=function(d="",n="file.json",t="text/json"){var a=document.createElement("a");a.download=n;a.href=URL.createObjectURL(new Blob([d],{type:t}));a.dataset.downloadurl=[t,a.download,a.href].join(":");a.dispatchEvent(new MouseEvent("click"))};this.worker=function(e){return new Worker(URL.createObjectURL(new Blob([e],{type:"text/javascript"})))};this.img=function(e,n){var i=new Image();i.onload=function(){n(i)};i.src=e;return i};this.js=function(e,n){var i=document.createElement("script");i.onload=n;i.src=e;document.documentElement.appendChild(i)};this.copy=function(e){return JSON.parse(JSON.stringify(e))};this.eval=function(e){return Function("\"use strict\";return("+e+")")()};this.r=function(){var g=document.documentElement;var e=document.body.style;e.height=g.clientHeight.toString()+"px";e.width=g.clientWidth.toString()+"px";this.d=window.devicePixelRatio;this.w=g.clientWidth*this.d+0.5|0;this.h=g.clientHeight*this.d+0.5|0;var s=this.l.length;for(var i=0;i<s;++i){this.l[i](this.w,this.h,this.d)}}.bind(this);this.on=function(f){this.l.push(f)}.bind(this);this.dom=function(n,a,d){var e=document.createElement(n);var s=a.length;for(var i=0;i<s;i+=2){if(a[i]==="innerHTML"){e.innerHTML=a[i+1]}else{e.setAttribute(a[i],a[i+1])}};if(typeof d!=="undefined"){d.appendChild(e)};return e};this.m=function(){setTimeout(function(){if(!this.k){this.r()}}.bind(this),16)}.bind(this);this.o=function(event){var n=event.target.tagName;if(n==="INPUT"||n==="TEXTAREA"||n==="DIV"){this.k=true}}.bind(this);this.p=function(event){var n=event.target.tagName;if(n==="INPUT"||n==="TEXTAREA"||n==="DIV"){this.k=false}}.bind(this);window.addEventListener("load",this.r);window.addEventListener("resize",this.m);document.addEventListener("focusin",this.o);document.addEventListener("focusout",this.p);this.dom("style",["innerHTML","html,body{touch-action:none;position:absolute;overflow:hidden;border:none;left:0px;top:0px;width:100%;height:100%;margin:0px;padding:0px;background:rgba(0,0,0,0)} *{-webkit-tap-highlight-color:rgba(0,0,0,0);tap-highlight-color:rgba(0,0,0,0);outline:none;user-select:none;-webkit-user-select:none;scrollbar-width:none;overscroll-behavior:contain;-webkit-touch-callout:none;touch-callout:none} ::-webkit-scrollbar{display:none} ::scrollbar{display:none}"],b);this.dom("meta",["name","viewport","content","width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"],b)};var tools=new TOOLS();
+</script>
+<script src="MIDI.js"></script>
+<script>
+window.onerror=function(message,source,lineno,colno,error){alert("(。・`ω´・) 出错了!\n错误信息: "+message+"\n源: "+source+"\n行: "+lineno+"\n列: "+colno+"\n堆栈跟踪: \n"+error.stack)};
+var midi=null;
+window.onload=function(){
+midi=new MIDI();
+}
+tools.dom("h1",["innerHTML","MIDI Tester V0.2"],document.body);
+var bt=tools.dom("button",["innerHTML","选择文件"],document.body);
+var reboot=tools.dom("button",["innerHTML","重启到战棋"],document.body);
+tools.dom("p",["innerHTML","或者从以下midi中选择"],document.body);
+reboot.onclick=function(){
+try{
+WEBVIEW.setOrientation(0);
+}catch(e){}
+location.href="./../../index.html";
+};
+var input=tools.dom("input",["type","file"]);
+bt.onmouseup=function(){
+input.dispatchEvent(new Event("click"));input.click();
+}
+input.onchange=function(event){
+var file=event.target.files[0];
+var fr=new FileReader();
+fr.onload=function(e){
+var data=e.target.result;
+midi.setData(data);
+}
+fr.readAsArrayBuffer(file);
+}
+function parseBase64(dataUrl){
+var arr=dataUrl.split(","), 
+bstr=atob(arr[1]), 
+n=bstr.length, 
+u8arr=new Uint8Array(n);
+while(n--){
+u8arr[n]=bstr.charCodeAt(n);
+}
+return u8arr;
+};
+function addExtraMIDI(name,midiBuffer){
+var btc=tools.dom("button",["innerHTML",name],document.body);
+btc.onclick=function(){
+midi.setData(this.slice(0));
+}.bind(midiBuffer);
+}
+function loadExtraMIDIList(){
+tools.js("extra.js",function(){
+for(var i=0;i<data.length;++i){
+var n=data[i];
+tools.js(n,function(){
+addExtraMIDI(this.e[this.e.length-1].split(".")[0],parseBase64(data).buffer);
+}.bind({e:n.split("/")}));
+}
+});
+}
+loadExtraMIDIList();
+</script>
+</body></html>
